@@ -9,12 +9,6 @@ ENV TZ=Etc/UTC
 RUN apt-get -y update
 RUN apt-get -y install python3 gcc g++ libssl-dev curl sudo
 
-# Ubuntu 18.04 has an older version of Git, which causes actions/checkout@v3
-# to check out the repository with REST, breaking version number generation.
-RUN apt-get -y install software-properties-common
-RUN add-apt-repository -y ppa:git-core/ppa
-RUN apt-get -y install git
-
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 

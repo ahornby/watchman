@@ -3,54 +3,40 @@ name: package
 on: push
 
 jobs:
-  docker-ubuntu:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          build-args: "UBUNTU_VERSION=24.04"
-          file: watchman/build/package/ubuntu-env/Dockerfile
-          push: true
-          tags: ${{ format('ghcr.io/{0}/watchman-build-env:latest', github.repository) }}
-
   clone-and-build-and-package-ubuntu:
-    needs: docker-ubuntu
     runs-on: ubuntu-latest
     container:
-      image: ${{ format('ghcr.io/{0}/watchman-build-env:latest', github.repository) }}
+      image: ubuntu:24.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: rustup default stable
-        run: rustup default stable
+      - name: Set env
+        run: |
+          echo "UBUNTU_VERSION=24.04" >> $GITHUB_ENV &&
+          echo "DEBIAN_FRONTEND=noninteractive" >> $GITHUB_ENV &&
+          echo "TZ=Etc/UTC" >> $GITHUB_ENV
+
+      - name: Update system package info
+        run: apt-get -y update
+
+      - name: Install toolchain
+        run: apt-get -y install python3 gcc g++ libssl-dev curl sudo git
+
+      - name: Install rust stable
+        uses: dtolnay/rust-toolchain@stable
 
       - name: Install system dependencies
         run: ./install-system-packages.sh
 
-      - name: Test cargo
-        run: cargo --help
+      # - name: Test cargo
+      #   run: cargo --help
 
-      - name: Fix dubious ownership
-        run: git config --global --add safe.directory /__w/watchman/watchman
+      # - name: Fix dubious ownership
+      #   run: git config --global --add safe.directory /__w/watchman/watchman
 
       - name: Build Watchman binaries
         run: ./autogen.sh
 
-      - name: Make .deb
-        run: ./watchman/build/package/make-deb.sh
+      # - name: Make .deb
+      #   run: ./watchman/build/package/make-deb.sh

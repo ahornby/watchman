@@ -10,6 +10,7 @@ cd "$(dirname "$0")"
 set -x
 PREFIX=${PREFIX:-/usr/local}
 python3 build/fbcode_builder/getdeps.py build \
+        --no-tests \
         --allow-system-packages \
         --src-dir=. \
         "--project-install-prefix=watchman:$PREFIX" \
