@@ -18,6 +18,7 @@ import tempfile
 # observe the patched version of this function!
 import getdeps.cache as cache_module
 from getdeps.buildopts import setup_build_options
+from getdeps.copytree import rmtree_more
 from getdeps.dyndeps import create_dyn_dep_munger
 from getdeps.errors import TransientFailure
 from getdeps.fetcher import (
@@ -500,7 +501,7 @@ def clean_dirs(opts):
         d = os.path.join(opts.scratch_dir, d)
         print("Cleaning %s..." % d)
         if os.path.exists(d):
-            shutil.rmtree(d)
+            rmtree_more(d)
 
 
 @cmd("clean", "clean up the scratch dir")
