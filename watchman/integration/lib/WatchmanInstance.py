@@ -233,16 +233,15 @@ class _Instance:
             raise val
 
     def _waitForSuspend(self, suspended, timeout: float) -> bool:
-        if os.name == "nt":
-            # There's no 'ps' equivalent we can use
-            return True
-
-        # Check the information in the 'ps' output
+        # Check the information in the 'ps' or 'powershell' output
         deadline = time.time() + timeout
         state = "s" if sys.platform.startswith("sunos") else "state"
+        cmd = ["ps", "-o", state, "-p", str(self.pid)]
+        if os.name == "nt":
+            cmd = [self._susresBinary(), "status", str(self.pid)]
         while time.time() < deadline:
             out, err = subprocess.Popen(
-                ["ps", "-o", state, "-p", str(self.pid)],
+                cmd,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
             ).communicate()
