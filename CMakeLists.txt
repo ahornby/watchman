@@ -3,7 +3,8 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
+# 3.19+ has improved python discovery
+cmake_minimum_required(VERSION 3.19 FATAL_ERROR)
 
 set(CMAKE_MODULE_PATH
   # For in-fbsource builds on mac
@@ -403,7 +404,7 @@ if(NOT WIN32)
   endif()
 endif()
 
-find_package(Python3 COMPONENTS Interpreter Development)
+find_package(Python3 3.10...3.99 COMPONENTS Interpreter Development)
 
 if(NOT Python3_Interpreter_FOUND)
   message(STATUS "python not found, using default python")
