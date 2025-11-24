@@ -95,13 +95,13 @@ class WatchmanTestCase(TempDirPerTestMixin, unittest.TestCase):
 
     def __init__(self, methodName: str = "run") -> None:
         super(WatchmanTestCase, self).__init__(methodName)
+        # ASAN-enabled builds can be slower enough that we hit timeouts
+        # with the default of 1 second. Needs to be before setDefaultConfiguration
+        self.socketTimeout = 80.0
         # pyre-fixme[16]: `WatchmanTestCase` has no attribute `setDefaultConfiguration`.
         self.setDefaultConfiguration()
         self.maxDiff = None
         self.attempt = 0
-        # ASAN-enabled builds can be slower enough that we hit timeouts
-        # with the default of 1 second
-        self.socketTimeout = 80.0
 
     def requiresPersistentSession(self) -> bool:
         return False

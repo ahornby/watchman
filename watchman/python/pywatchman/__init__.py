@@ -846,7 +846,7 @@ class client:
         self,
         sockpath=None,
         tcpAddress=None,
-        timeout=1.0,
+        timeout=None,
         transport=None,
         sendEncoding=None,
         recvEncoding=None,
@@ -857,6 +857,11 @@ class client:
         valueErrors=False,
         binpath=None,
     ):
+        if timeout is None:
+            if os.name == "nt":
+                timeout = 2
+            else:
+                timeout = 1
         if sockpath is not None and not isinstance(sockpath, SockPath):
             sockpath = SockPath(sockpath=sockpath, tcp_address=tcpAddress)
         self.sockpath = sockpath
